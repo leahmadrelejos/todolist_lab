@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 
+/* TASK FORM */
 function TaskForm({ groups, onAdd, defaultGroup = "" }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -54,6 +55,7 @@ function TaskForm({ groups, onAdd, defaultGroup = "" }) {
   );
 }
 
+/* TASK LIST */
 function TaskList({ tasks, onToggle, onUpdateStatus, onDelete }) {
   if (!tasks.length) {
     return (
@@ -70,7 +72,9 @@ function TaskList({ tasks, onToggle, onUpdateStatus, onDelete }) {
       {tasks.map((task) => (
         <article className="task-card" key={task.id}>
           <button
-            className={`check-btn ${task.status === "Done" ? "checked" : ""}`}
+            className={`check-btn ${
+              task.status === "Done" ? "checked" : ""
+            }`}
             onClick={() => onToggle(task.id)}
             aria-label="Toggle task completion"
             type="button"
@@ -87,9 +91,13 @@ function TaskList({ tasks, onToggle, onUpdateStatus, onDelete }) {
           </div>
 
           <select
-            className={`status-select status-${task.status.toLowerCase().replace(" ", "-")}`}
+            className={`status-select status-${task.status
+              .toLowerCase()
+              .replace(" ", "-")}`}
             value={task.status}
-            onChange={(e) => onUpdateStatus(task.id, e.target.value)}
+            onChange={(e) =>
+              onUpdateStatus(task.id, e.target.value)
+            }
             aria-label={`Status for ${task.title}`}
           >
             <option>Pending</option>
@@ -111,19 +119,23 @@ function TaskList({ tasks, onToggle, onUpdateStatus, onDelete }) {
   );
 }
 
+/* DASHBOARD */
 export function Dashboard({ tasks, groups }) {
   const done = tasks.filter((task) => task.status === "Done").length;
   const pending = tasks.filter((task) => task.status === "Pending").length;
-  const progress = tasks.filter((task) => task.status === "In Progress").length;
+  const progress = tasks.filter(
+    (task) => task.status === "In Progress"
+  ).length;
 
   return (
     <>
       <div className="welcome">
-        <div>
+        <div className="welcome-text">
           <p className="eyebrow">OVERVIEW</p>
           <h1>Dashboard</h1>
           <p>Organize your tasks and make today productive.</p>
         </div>
+
         <Link className="primary-btn link-btn" to="/tasks">
           + Create Task
         </Link>
@@ -135,16 +147,19 @@ export function Dashboard({ tasks, groups }) {
           <p>Total Tasks</p>
           <h2>{tasks.length}</h2>
         </div>
+
         <div className="stat-card">
           <span className="stat-icon orange">◷</span>
           <p>Pending</p>
           <h2>{pending}</h2>
         </div>
+
         <div className="stat-card">
           <span className="stat-icon blue">↻</span>
           <p>In Progress</p>
           <h2>{progress}</h2>
         </div>
+
         <div className="stat-card">
           <span className="stat-icon green">✓</span>
           <p>Completed</p>
@@ -161,6 +176,7 @@ export function Dashboard({ tasks, groups }) {
             </div>
             <Link to="/tasks">View all →</Link>
           </div>
+
           <TaskList
             tasks={tasks.slice(-4).reverse()}
             onToggle={() => {}}
@@ -178,36 +194,52 @@ export function Dashboard({ tasks, groups }) {
             <Link to="/groups">View all →</Link>
           </div>
 
-          {groups.length ? groups.map((group) => (
-            <Link
-              className="group-row"
-              to={`/groups/${group.id}`}
-              key={group.id}
-            >
-              <span className="group-symbol">▤</span>
-              <span>{group.name}</span>
-              <span className="group-count">
-                {tasks.filter((task) => String(task.groupId) === String(group.id)).length}
-              </span>
-            </Link>
-          )) : <p>No groups created yet.</p>}
+          {groups.length ? (
+            groups.map((group) => (
+              <Link
+                className="group-row"
+                to={`/groups/${group.id}`}
+                key={group.id}
+              >
+                <span className="group-symbol">▤</span>
+                <span>{group.name}</span>
+                <span className="group-count">
+                  {tasks.filter(
+                    (task) =>
+                      String(task.groupId) === String(group.id)
+                  ).length}
+                </span>
+              </Link>
+            ))
+          ) : (
+            <p>No groups created yet.</p>
+          )}
         </section>
       </div>
     </>
   );
 }
 
-export function TasksPage({ tasks, groups, onAdd, onToggle, onUpdateStatus, onDelete }) {
+/* TO-DO LIST PAGE */
+export function TasksPage({
+  tasks,
+  groups,
+  onAdd,
+  onToggle,
+  onUpdateStatus,
+  onDelete,
+}) {
   const [filter, setFilter] = useState("All");
 
-  const filteredTasks = filter === "All"
-    ? tasks
-    : tasks.filter((task) => task.status === filter);
+  const filteredTasks =
+    filter === "All"
+      ? tasks
+      : tasks.filter((task) => task.status === filter);
 
   return (
     <>
       <div className="welcome">
-        <div>
+        <div className="welcome-text">
           <p className="eyebrow">YOUR WORK</p>
           <h1>To-Do List</h1>
           <p>Manage your tasks in one place.</p>
@@ -221,6 +253,7 @@ export function TasksPage({ tasks, groups, onAdd, onToggle, onUpdateStatus, onDe
               <h2>My Tasks</h2>
               <p>{filteredTasks.length} task(s)</p>
             </div>
+
             <select
               className="filter-select"
               value={filter}
@@ -248,6 +281,7 @@ export function TasksPage({ tasks, groups, onAdd, onToggle, onUpdateStatus, onDe
               <p>Enter your task details</p>
             </div>
           </div>
+
           <TaskForm groups={groups} onAdd={onAdd} />
         </section>
       </div>
@@ -255,12 +289,14 @@ export function TasksPage({ tasks, groups, onAdd, onToggle, onUpdateStatus, onDe
   );
 }
 
+/* TASK GROUPS PAGE */
 export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
   const [name, setName] = useState("");
 
   function submit(e) {
     e.preventDefault();
     if (!name.trim()) return;
+
     onCreate(name);
     setName("");
   }
@@ -268,7 +304,7 @@ export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
   return (
     <>
       <div className="welcome">
-        <div>
+        <div className="welcome-text">
           <p className="eyebrow">CATEGORIES</p>
           <h1>Task Groups</h1>
           <p>Keep related tasks together.</p>
@@ -277,6 +313,7 @@ export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
 
       <section className="panel">
         <h2>Create a Group</h2>
+
         <form className="inline-form" onSubmit={submit}>
           <input
             value={name}
@@ -284,7 +321,9 @@ export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
             placeholder="Enter group name"
             required
           />
-          <button className="primary-btn">+ Add Group</button>
+          <button className="primary-btn" type="submit">
+            + Add Group
+          </button>
         </form>
       </section>
 
@@ -293,12 +332,21 @@ export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
           <article className="group-card" key={group.id}>
             <span className="group-symbol">▤</span>
             <h2>{group.name}</h2>
+
             <p>
-              {tasks.filter((task) => String(task.groupId) === String(group.id)).length} tasks
+              {tasks.filter(
+                (task) => String(task.groupId) === String(group.id)
+              ).length}{" "}
+              tasks
             </p>
+
             <div className="group-actions">
               <Link to={`/groups/${group.id}`}>Open group →</Link>
-              <button className="delete-btn" onClick={() => onDelete(group.id)}>
+              <button
+                className="delete-btn"
+                type="button"
+                onClick={() => onDelete(group.id)}
+              >
                 Delete
               </button>
             </div>
@@ -309,10 +357,24 @@ export function GroupsPage({ groups, tasks, onCreate, onDelete }) {
   );
 }
 
-export function GroupDetail({ groups, tasks, onAdd, onToggle, onUpdateStatus, onDelete }) {
+/* GROUP DETAILS */
+export function GroupDetail({
+  groups,
+  tasks,
+  onAdd,
+  onToggle,
+  onUpdateStatus,
+  onDelete,
+}) {
   const { groupId } = useParams();
-  const group = groups.find((item) => String(item.id) === groupId);
-  const groupTasks = tasks.filter((task) => String(task.groupId) === groupId);
+
+  const group = groups.find(
+    (item) => String(item.id) === groupId
+  );
+
+  const groupTasks = tasks.filter(
+    (task) => String(task.groupId) === groupId
+  );
 
   if (!group) {
     return (
@@ -326,12 +388,15 @@ export function GroupDetail({ groups, tasks, onAdd, onToggle, onUpdateStatus, on
   return (
     <>
       <div className="welcome">
-        <div>
+        <div className="welcome-text">
           <p className="eyebrow">TASK GROUP</p>
           <h1>{group.name}</h1>
           <p>Tasks organized in this group.</p>
         </div>
-        <Link className="secondary-btn" to="/groups">← Back</Link>
+
+        <Link className="secondary-btn" to="/groups">
+          ← Back
+        </Link>
       </div>
 
       <div className="content-grid task-page-grid">
@@ -344,20 +409,27 @@ export function GroupDetail({ groups, tasks, onAdd, onToggle, onUpdateStatus, on
             onDelete={onDelete}
           />
         </section>
+
         <section className="panel">
           <h2>Add a Task</h2>
-          <TaskForm groups={groups} onAdd={onAdd} defaultGroup={group.id} />
+          <TaskForm
+            groups={groups}
+            onAdd={onAdd}
+            defaultGroup={group.id}
+          />
         </section>
       </div>
     </>
   );
 }
 
+/* USER GUIDE */
 export function GuidePage() {
   return (
     <section className="panel">
       <p className="eyebrow">HELP CENTER</p>
       <h1>User Guide</h1>
+
       <ol className="guide-list">
         <li>Open To-Do List to add a task.</li>
         <li>Enter a title, optional description, and group.</li>
@@ -369,13 +441,72 @@ export function GuidePage() {
   );
 }
 
+/* DEVELOPERS */
 export function DevelopersPage() {
+  const developers = ["NEIL", "JERRY", "LEAH", "REYSEL"];
+
+  const technologies = [
+    "React",
+    "React Router",
+    "Vite",
+    "HTML",
+    "CSS",
+    "JavaScript",
+  ];
+
   return (
-    <section className="panel">
-      <p className="eyebrow">ABOUT THE PROJECT</p>
-      <h1>Developers</h1>
-      <p>Taskly is a simple task management website created using React.</p>
-      <p>Technology used: React, React Router, Vite, and CSS.</p>
-    </section>
+    <div className="page-container">
+      <div className="page-header">
+        <h1>Meet the Developers</h1>
+        <p>The team behind Taskly</p>
+      </div>
+
+      <section className="developers-intro">
+        <h2>About Taskly</h2>
+        <p>
+          Taskly is a task management application designed to help
+          users organize tasks, manage groups, and track their
+          activities in one place.
+        </p>
+      </section>
+
+      <section className="developers-section">
+        <h2>Our Developers</h2>
+
+        <div className="developers-list">
+          {developers.map((name) => (
+            <div className="developer-card" key={name}>
+              <div className="developer-avatar">
+                {name.charAt(0)}
+              </div>
+
+              <h3>{name}</h3>
+              <p>Taskly Developer</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="technology-section">
+        <h2>Technologies Used</h2>
+
+        <div className="technology-list">
+          {technologies.map((technology) => (
+            <span className="technology-tag" key={technology}>
+              {technology}
+            </span>
+          ))}
+        </div>
+      </section>
+
+      <section className="mission-section">
+        <h2>Our Mission</h2>
+        <p>
+          Our mission is to provide a simple and user-friendly
+          application that helps users manage tasks efficiently
+          and stay organized.
+        </p>
+      </section>
+    </div>
   );
 }

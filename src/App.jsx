@@ -16,10 +16,8 @@ export default function App() {
     setTasks((prev) => [
       ...prev,
       {
+        ...task,
         id: Date.now(),
-        title: task.title,
-        description: task.description || "",
-        groupId: task.groupId || "",
         status: "Pending",
         createdAt: new Date().toLocaleDateString(),
       },
@@ -32,8 +30,7 @@ export default function App() {
         task.id === id
           ? {
               ...task,
-              status:
-                task.status === "Done" ? "Pending" : "Done",
+              status: task.status === "Done" ? "Pending" : "Done",
             }
           : task
       )
@@ -42,9 +39,7 @@ export default function App() {
 
   function updateTaskStatus(id, status) {
     setTasks((prev) =>
-      prev.map((task) =>
-        task.id === id ? { ...task, status } : task
-      )
+      prev.map((task) => (task.id === id ? { ...task, status } : task))
     );
   }
 
@@ -53,17 +48,25 @@ export default function App() {
   }
 
   function createGroup(name) {
-    if (!name.trim()) return;
-
-    setGroups((prev) => [
-      ...prev,
-      { id: Date.now(), name: name.trim() },
-    ]);
+    if (name.trim()) {
+      setGroups((prev) => [
+        ...prev,
+        { id: Date.now(), name: name.trim() },
+      ]);
+    }
   }
 
   function deleteGroup(id) {
     setGroups((prev) => prev.filter((group) => group.id !== id));
   }
+
+  const menu = [
+    { to: "/", label: "▦ Dashboard" },
+    { to: "/tasks", label: "☑ To-Do List" },
+    { to: "/groups", label: "▤ Task Groups" },
+    { to: "/guide", label: "ⓘ User Guide" },
+    { to: "/developers", label: "♙ Developers" },
+  ];
 
   return (
     <div className="app">
@@ -71,27 +74,32 @@ export default function App() {
         <h2 className="logo">Taskly<span>.</span></h2>
         <p className="menu-label">MENU</p>
 
-        <nav className="navigation">
-          <NavLink to="/">▦ Dashboard</NavLink>
-          <NavLink to="/tasks">☑ To-Do List</NavLink>
-          <NavLink to="/groups">▤ Task Groups</NavLink>
-          <NavLink to="/guide">ⓘ User Guide</NavLink>
-          <NavLink to="/developers">♙ Developers</NavLink>
+        <nav className="sidebar-nav">
+          {menu.map((item) => (
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+            >
+              {item.label}
+            </NavLink>
+          ))}
         </nav>
 
-        <div className="sidebar-bottom">
+        <div className="sidebar-footer">
           <span>Stay organized.</span>
-          <small>Make every day productive.</small>
+          <p>Make every day productive.</p>
         </div>
       </aside>
 
       <main className="main-content">
         <header className="topbar">
           <div>
-            <p className="eyebrow">YOUR PERSONAL WORKSPACE</p>
+            <p>YOUR PERSONAL WORKSPACE</p>
             <h2>My Workspace</h2>
           </div>
-          <div className="profile">
+
+          <div className="account">
             <div className="avatar">U</div>
             <span>My Account</span>
           </div>
